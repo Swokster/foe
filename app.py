@@ -56,7 +56,7 @@ def generate_combinations_with_replacement(
   return all_combinations
 
 
-def calculate_combinations(X: float, A: float, B: float, Y: int) -> List[Tuple]:
+def calculate_combinations(X: int, A: int, B: int, Y: int) -> List[Tuple]:
   results = []
   building_keys = list(BUILDINGS.keys())
   all_combinations = generate_combinations_with_replacement(building_keys, Y)
@@ -69,7 +69,8 @@ def calculate_combinations(X: float, A: float, B: float, Y: int) -> List[Tuple]:
         BUILDINGS[b]["value"] for b in combo if BUILDINGS[b]["type"] == "percent"
     )
 
-    total = (X + A + sum_abs) * (1 + (B + sum_percent) / 100)
+    # Вычисление итогового значения (округляем до целого, если нужно убрать дробную часть)
+    total = round((X + A + sum_abs) * (1 + (B + sum_percent) / 100))
     formula_str = (
         f"({X} + {A} + {sum_abs}) * (1 + ({B} + {sum_percent})/100)"
     )
@@ -99,7 +100,6 @@ def main():
 
   st.title("Калькулятор бонусов осадных строений")
 
-  # Стили для футера
   st.markdown(
       """
     <style>
@@ -122,25 +122,28 @@ def main():
     X_input = st.number_input(
         "База",
         value=None,
-        step=None,
-        help=" Базовое значение показателя без учета бонусов",
+        step=1,
+        format="%d",
+        help="Базовое значение показателя без учета бонусов",
     )
   with col2:
     A_input = st.number_input(
-        " Абсолютный бонус",
+        "Абсолютный бонус",
         value=None,
-        step=None,
+        step=1,
+        format="%d",
         help="Абсолютные бонусы от стоящих строений",
     )
-    A = A_input if A_input is not None else 0.0
+    A = int(A_input) if A_input is not None else 0
   with col3:
     B_input = st.number_input(
-        " Процентный бонус",
+        "Процентный бонус",
         value=None,
-        step=None,
+        step=1,
+        format="%d",
         help="Процентные бонусы от стоящих строений",
     )
-    B = B_input if B_input is not None else 0.0
+    B = int(B_input) if B_input is not None else 0
   with col4:
     Y = st.selectbox(
         "Зданий к постройке",
@@ -151,7 +154,6 @@ def main():
 
   st.markdown("---")
 
-  # Проверка: если базовое значение не заполнено
   if X_input is None:
     st.info("Пожалуйста, введите базовое значение сектора")
 
@@ -166,9 +168,9 @@ def main():
             st.image("https://placehold.co/75x75?text=NA", width=75)
       with cols[3]:
         st.markdown("**Бонусы:**  \nАбс: +0 | Проц: +0%")
-        st.metric("Итог", "0.00")
+        st.metric("Итог", "0")
   else:
-    X = X_input
+    X = int(X_input)
     results = calculate_combinations(X, A, B, Y)
     if not results:
       st.warning("Нет доступных комбинаций.")
@@ -215,9 +217,9 @@ def main():
 
           with cols[3]:
             st.markdown(f"**Бонусы:**  \n{bonuses}")
-            st.metric("Итог", f"{total:.2f}")
+            # Выводим итог как целое число без знаков после запятой
+            st.metric("Итог", f"{int(total)}")
 
-  # Фиксированный футер в самом низу страницы
   st.markdown(
       "<div class='footer'>Powered by Swokster 2026</div>",
       unsafe_allow_html=True,
