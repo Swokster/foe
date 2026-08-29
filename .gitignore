@@ -1,0 +1,24 @@
+# Виртуальное окружение
+.venv/
+venv/
+ENV/
+
+# Кэш Python
+__pycache__/
+*.pypyc
+*.pyc
+
+# Настройки редакторов (VS Code, PyCharm и др.)
+.devcontainer
+.vscode/
+.idea/
+*.swp
+*.swo
+
+#Другое
+test.py
+temp.py
+
+# Системные файлы ОС
+.DS_Store    # Для macOS
+Thumbs.db    # Для Windows

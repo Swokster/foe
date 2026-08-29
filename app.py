@@ -97,7 +97,7 @@ def main():
       page_title="Калькулятор строений", page_icon="🏗️", layout="centered"
   )
 
-  st.title("🏗️ Калькулятор бонусов строений")
+  st.title("Калькулятор бонусов осадных строений")
 
   # Стили для футера
   st.markdown(
@@ -123,11 +123,11 @@ def main():
         "База",
         value=None,
         step=None,
-        help="Базовое значение показателя без учета бонусов",
+        help=" Базовое значение показателя без учета бонусов",
     )
   with col2:
     A_input = st.number_input(
-        "Абсолютный бонус",
+        " Абсолютный бонус",
         value=None,
         step=None,
         help="Абсолютные бонусы от стоящих строений",
@@ -135,7 +135,7 @@ def main():
     A = A_input if A_input is not None else 0.0
   with col3:
     B_input = st.number_input(
-        "Процентный бонус",
+        " Процентный бонус",
         value=None,
         step=None,
         help="Процентные бонусы от стоящих строений",
