@@ -56,7 +56,9 @@ def generate_combinations_with_replacement(
   return all_combinations
 
 
-def calculate_combinations(X: int, A: int, B: int, Y: int) -> List[Tuple]:
+def calculate_combinations(
+    X: int, A: int, B: int, Y: int, castle_bonus: float
+) -> List[Tuple]:
   results = []
   building_keys = list(BUILDINGS.keys())
   all_combinations = generate_combinations_with_replacement(building_keys, Y)
@@ -69,10 +71,14 @@ def calculate_combinations(X: int, A: int, B: int, Y: int) -> List[Tuple]:
         BUILDINGS[b]["value"] for b in combo if BUILDINGS[b]["type"] == "percent"
     )
 
-    # Вычисление итогового значения (округляем до целого, если нужно убрать дробную часть)
-    total = round((X + A + sum_abs) * (1 + (B + sum_percent) / 100))
+    # Итоговое значение с учетом бонуса замка
+    total = round(
+        (X + A + sum_abs) * (1 + (B + sum_percent) / 100)
+        + (A + sum_abs) * (castle_bonus)
+    )
     formula_str = (
-        f"({X} + {A} + {sum_abs}) * (1 + ({B} + {sum_percent})/100)"
+        f"({X} + {A} + {sum_abs}) * (1 + ({B} + {sum_percent})/100) +"
+        f" ({A} + {sum_abs}) * ({castle_bonus} - 1)"
     )
 
     counter = Counter(combo)
@@ -85,9 +91,7 @@ def calculate_combinations(X: int, A: int, B: int, Y: int) -> List[Tuple]:
     compact_str = " + ".join(compact_parts)
 
     bonuses_str = f"Абс: +{sum_abs} | Проц: +{round(sum_percent)}%"
-    results.append(
-        (compact_str, bonuses_str, formula_str, total, combo, Y)
-    )
+    results.append((compact_str, bonuses_str, formula_str, total, combo, Y))
 
   results.sort(key=lambda x: x[3], reverse=True)
   return results
@@ -117,7 +121,7 @@ def main():
       unsafe_allow_html=True,
   )
 
-  col1, col2, col3, col4 = st.columns(4)
+  col1, col2, col3, col4, col5 = st.columns(5)
   with col1:
     X_input = st.number_input(
         "База",
@@ -128,7 +132,7 @@ def main():
     )
   with col2:
     A_input = st.number_input(
-        "Абсолютный бонус",
+        "Абс. бонус",
         value=None,
         step=1,
         format="%d",
@@ -137,7 +141,7 @@ def main():
     A = int(A_input) if A_input is not None else 0
   with col3:
     B_input = st.number_input(
-        "Процентный бонус",
+        "Проц. бонус",
         value=None,
         step=1,
         format="%d",
@@ -145,12 +149,26 @@ def main():
     )
     B = int(B_input) if B_input is not None else 0
   with col4:
-    Y = st.selectbox(
-        "Зданий к постройке",
-        [1, 2, 3],
-        index=2,
-        help="Максимальное количество доступных для постройки зданий",
-    )
+      castle_option = st.selectbox(
+          "Бонус замка",
+          ["нет 0%", "Базовый 25%", "Обычный 50%", "Улучшенный 100%"],
+          index=3,
+          help="Бонус замка к абсолютным показателям",
+      )
+      castle_map = {
+          "Нет": 0.0,
+          "Базовый 25%": 0.25,
+          "Обычный 50%": 0.5,
+          "Улучшенный 100%": 1.0,
+      }
+      castle_bonus = castle_map[castle_option]
+  with col5:
+      Y = st.selectbox(
+          "Количество",
+          [1, 2, 3],
+          index=2,
+          help="Максимальное количество свободных для постройки зданий",
+      )
 
   st.markdown("---")
 
@@ -171,7 +189,7 @@ def main():
         st.metric("Итог", "0")
   else:
     X = int(X_input)
-    results = calculate_combinations(X, A, B, Y)
+    results = calculate_combinations(X, A, B, Y, castle_bonus)
     if not results:
       st.warning("Нет доступных комбинаций.")
     else:
