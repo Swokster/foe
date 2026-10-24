@@ -105,15 +105,16 @@ def main():
   GA_TRACKING_ID = "G-4V4D2MC7XK"
 
   ga_script = f"""
-      <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){{dataLayer.push(arguments);}}
-        gtag('js', new Date());
-        gtag('config', '{GA_TRACKING_ID}');
-      </script>
-    """
-  st.components.v1.html(ga_script, height=0, width=0)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){{dataLayer.push(arguments);}}
+          gtag('js', new Date());
+          gtag('config', '{GA_TRACKING_ID}');
+        </script>
+      """
+  # Используем st.html, чтобы избавиться от предупреждения об устаревании
+  st.html(ga_script)
 
   st.title("Калькулятор бонусов осадных строений")
 
