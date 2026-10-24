@@ -101,21 +101,19 @@ def main():
   st.set_page_config(
       page_title="Калькулятор строений", page_icon="🏗️", layout="centered"
   )
-  # --- Google Analytics (Инъекция в head) ---
-  ga_code = """
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-4V4D2MC7XK"></script>
+  # --- Google Analytics ---
+  GA_TRACKING_ID = "G-4V4D2MC7XK"
+
+  ga_script = f"""
+      <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag(){{dataLayer.push(arguments);}}
         gtag('js', new Date());
-        gtag('config', 'G-4V4D2MC7XK');
+        gtag('config', '{GA_TRACKING_ID}');
       </script>
-      """
-  # Внедряем скрипт прямо в HTML-голову страницы Streamlit
-  st.markdown(
-      f"<script>parent.document.head.innerHTML += `{ga_code}`;</script>",
-      unsafe_allow_html=True,
-  )
+    """
+  st.components.v1.html(ga_script, height=0, width=0)
 
   st.title("Калькулятор бонусов осадных строений")
 
