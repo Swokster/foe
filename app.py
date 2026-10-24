@@ -113,7 +113,7 @@ def main():
         gtag('config', 'G-4V4D2MC7XK');
       </script>
       """
-  st.components.v1.html(ga_script, height=0, width=0)
+  st.html(ga_script)
 
   st.title("Калькулятор бонусов осадных строений")
 
