@@ -101,7 +101,19 @@ def main():
   st.set_page_config(
       page_title="Калькулятор строений", page_icon="🏗️", layout="centered"
   )
+  # --- Google Analytics ---
+  GA_TRACKING_ID = "G-4V4D2MC7XK"  # Замени на свой реальный G-код
 
+  ga_script = f"""
+      <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{GA_TRACKING_ID}');
+      </script>
+    """
+  st.components.v1.html(ga_script, height=0, width=0)
   st.title("Калькулятор бонусов осадных строений")
 
   st.markdown(
